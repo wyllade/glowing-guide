@@ -71,4 +71,13 @@ export const journalAPI = {
   getMoodLogs: (params) => api.get("/journal/mood", { params }),
 };
 
+export const adminAPI = {
+  dashboard: () => api.get("/admin/dashboard"),
+  listUsers: (params) => api.get("/admin/users", { params }),
+  updateUser: (id, data) => api.patch(`/admin/users/${id}`, data),
+  listCounsellors: (params) => api.get("/admin/counsellors", { params }),
+  verifyCounsellor: (id, isVerified) => api.patch(`/admin/counsellors/${id}/verify`, { is_verified: isVerified }),
+  listAppointments: (params) => api.get("/admin/appointments", { params }),
+};
+
 export default api;

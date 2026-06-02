@@ -13,7 +13,7 @@ export default function Navbar() {
   return (
     <nav className="navbar">
       <div className="nav-inner">
-        <Link to="/" className="nav-brand">Glowing Guide</Link>
+        <Link to="/" className="nav-brand">Upward</Link>
         <div className="nav-links">
           <Link to="/counsellors">Counsellors</Link>
           {user ? (
@@ -22,6 +22,7 @@ export default function Navbar() {
               <Link to="/appointments">Appointments</Link>
               <Link to="/journal">Journal</Link>
               <Link to="/profile">Profile</Link>
+              {user.role === "admin" && <Link to="/admin">Admin</Link>}
               <span className="nav-user">{user.first_name || user.email}</span>
               <button onClick={handleLogout} className="btn btn-sm">Logout</button>
             </>

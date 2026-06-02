@@ -22,6 +22,7 @@ def create_app(config_class=Config):
     from app.routes.chat import chat_bp
     from app.routes.payments import payments_bp
     from app.routes.journal import journal_bp
+    from app.routes.admin import admin_bp
 
     app.register_blueprint(auth_bp, url_prefix="/api/auth")
     app.register_blueprint(users_bp, url_prefix="/api/users")
@@ -30,6 +31,7 @@ def create_app(config_class=Config):
     app.register_blueprint(chat_bp, url_prefix="/api/chat")
     app.register_blueprint(payments_bp, url_prefix="/api/payments")
     app.register_blueprint(journal_bp, url_prefix="/api/journal")
+    app.register_blueprint(admin_bp, url_prefix="/api/admin")
 
     @app.route("/api/health")
     def health():

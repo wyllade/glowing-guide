@@ -1,6 +1,9 @@
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from flask_jwt_extended import JWTManager
+try:
+    from flask_jwt_extended import JWTManager
+except ImportError:
+    JWTManager = None
 from flask_socketio import SocketIO
 
 db = SQLAlchemy()

@@ -93,7 +93,7 @@ def update_status(appointment_id):
             return jsonify({"error": "Only counsellor can confirm"}), 403
         appointment.status = "confirmed"
         if not appointment.meeting_link:
-            room = f"GlowingGuide-{appointment.id}-{secrets.token_hex(4)}"
+            room = f"Upward-{appointment.id}-{secrets.token_hex(4)}"
             appointment.meeting_link = f"https://meet.jit.si/{room}"
 
     elif new_status == "cancelled":

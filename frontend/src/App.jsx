@@ -13,6 +13,7 @@ import Chat from "./pages/Chat";
 import Journal from "./pages/Journal";
 import Profile from "./pages/Profile";
 import VideoCall from "./pages/VideoCall";
+import AdminDashboard from "./pages/AdminDashboard";
 
 export default function App() {
   return (
@@ -31,6 +32,7 @@ export default function App() {
             <Route path="/journal" element={<PrivateRoute><Journal /></PrivateRoute>} />
             <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
             <Route path="/video-call/:appointmentId" element={<PrivateRoute><VideoCall /></PrivateRoute>} />
+            <Route path="/admin" element={<PrivateRoute><AdminDashboard /></PrivateRoute>} />
           </Routes>
         </Layout>
       </AuthProvider>
