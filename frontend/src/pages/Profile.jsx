@@ -63,6 +63,11 @@ export default function Profile() {
     setAvailabilitySlots(res.data.availability);
   };
 
+  const deleteSlot = async (slotId) => {
+    await counsellorAPI.deleteAvailability(slotId);
+    setAvailabilitySlots((prev) => prev.filter((s) => s.id !== slotId));
+  };
+
   return (
     <div className="profile-page">
       <h1>Profile</h1>
@@ -110,7 +115,13 @@ export default function Profile() {
                 const daySlots = availabilitySlots.filter((s) => s.day_of_week === i);
                 return daySlots.length > 0 ? (
                   <div key={i} className="day-slots">
-                    <strong>{d}:</strong> {daySlots.map((s) => `${s.start_time}-${s.end_time}`).join(", ")}
+                    <strong>{d}:</strong>
+                    {daySlots.map((s) => (
+                      <span key={s.id} className="slot-item">
+                        {s.start_time}-{s.end_time}
+                        <button className="btn btn-sm btn-danger slot-delete" onClick={() => deleteSlot(s.id)}>&times;</button>
+                      </span>
+                    ))}
                   </div>
                 ) : null;
               })}

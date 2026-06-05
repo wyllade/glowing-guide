@@ -11,44 +11,52 @@ export default function Chat() {
   const [selectedUser, setSelectedUser] = useState(null);
   const [messages, setMessages] = useState([]);
   const [content, setContent] = useState("");
-  const [onlineUsers, setOnlineUsers] = useState(new Set());
   const socketRef = useRef(null);
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
     chatAPI.getConversations().then((res) => setConversations(res.data.conversations));
-  }, []);
-
-  useEffect(() => {
-    if (!selectedUser) return;
-
-    chatAPI.getMessages(selectedUser.id).then((res) => setMessages(res.data.messages));
 
     const token = localStorage.getItem("token");
     const socket = io(SOCKET_URL, { query: { token } });
     socketRef.current = socket;
 
-    socket.emit("join", { user1: user.id, user2: selectedUser.id });
-
     socket.on("new_message", (msg) => {
-      setMessages((prev) => [...prev, msg]);
+      setMessages((prev) => {
+        if (prev.some((m) => m.id === msg.id)) return prev;
+        const tempIdx = prev.findIndex((m) => m._temp && m.content === msg.content && m.sender_id === msg.sender_id);
+        if (tempIdx >= 0) {
+          const updated = [...prev];
+          updated[tempIdx] = msg;
+          return updated;
+        }
+        return [...prev, msg];
+      });
     });
 
-    return () => socket.disconnect();
-  }, [selectedUser]);
+    return () => {
+      socket.disconnect();
+      socketRef.current = null;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!selectedUser || !socketRef.current) return;
+
+    chatAPI.getMessages(selectedUser.id).then((res) => setMessages(res.data.messages));
+    socketRef.current.emit("join", { user1: user.id, user2: selectedUser.id });
+  }, [selectedUser, user]);
 
   useEffect(() => { messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages]);
 
-  const handleSend = async (e) => {
+  const handleSend = (e) => {
     e.preventDefault();
     if (!content.trim()) return;
 
     const msg = { receiver_id: selectedUser.id, content };
-    await chatAPI.sendMessage(msg);
-
     socketRef.current?.emit("send_message", msg);
 
-    setMessages((prev) => [...prev, { ...msg, sender_id: user.id, is_read: false, created_at: new Date().toISOString() }]);
+    setMessages((prev) => [...prev, { ...msg, sender_id: user.id, is_read: false, created_at: new Date().toISOString(), _temp: true }]);
     setContent("");
   };
 

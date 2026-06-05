@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useParams, useSearchParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { appointmentAPI } from "../services/api";
 import { useAuth } from "../context/AuthContext";
 
@@ -7,7 +7,6 @@ const JITSI_DOMAIN = "meet.jit.si";
 
 export default function VideoCall() {
   const { appointmentId } = useParams();
-  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { user } = useAuth();
   const jitsiContainerRef = useRef(null);

@@ -133,6 +133,24 @@ def set_availability():
     return jsonify({"message": "Availability saved"}), 201
 
 
+@counsellors_bp.route("/availability/<int:slot_id>", methods=["DELETE"])
+@jwt_required()
+@role_required("counsellor")
+def delete_availability(slot_id):
+    user_id = int(get_jwt_identity())
+    profile = CounsellorProfile.query.filter_by(user_id=user_id).first()
+    if not profile:
+        return jsonify({"error": "Complete your profile first"}), 400
+
+    slot = Availability.query.get(slot_id)
+    if not slot or slot.counsellor_id != profile.id:
+        return jsonify({"error": "Availability slot not found"}), 404
+
+    db.session.delete(slot)
+    db.session.commit()
+    return jsonify({"message": "Availability slot deleted"}), 200
+
+
 @counsellors_bp.route("/<int:counsellor_id>/availability", methods=["GET"])
 def get_counsellor_availability(counsellor_id):
     profile = CounsellorProfile.query.get(counsellor_id)

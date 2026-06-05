@@ -39,6 +39,7 @@ export const counsellorAPI = {
     isUpdate ? api.put("/counsellors/profile", data) : api.post("/counsellors/profile", data),
   getAvailability: () => api.get("/counsellors/availability"),
   setAvailability: (data) => api.post("/counsellors/availability", data),
+  deleteAvailability: (slotId) => api.delete(`/counsellors/availability/${slotId}`),
   getCounsellorAvailability: (id) => api.get(`/counsellors/${id}/availability`),
 };
 

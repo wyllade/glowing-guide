@@ -6,6 +6,7 @@ from app.models.appointment import Appointment
 from app.models.counsellor import CounsellorProfile, Availability
 from app.utils.decorators import role_required
 from datetime import datetime
+from sqlalchemy import or_
 import secrets
 
 appointments_bp = Blueprint("appointments", __name__)
@@ -50,6 +51,21 @@ def create_appointment():
 
     if start < datetime.utcnow():
         return jsonify({"error": "Cannot book in the past"}), 400
+
+    overlapping = Appointment.query.filter(
+        Appointment.counsellor_id == data["counsellor_id"],
+        Appointment.start_time < end,
+        Appointment.end_time > start,
+        Appointment.status.in_(["pending", "confirmed"]),
+    ).first()
+    if overlapping:
+        return jsonify({"error": "This time slot is already booked"}), 409
+
+    slot_id = data.get("slot_id")
+    if slot_id:
+        slot = Availability.query.get(slot_id)
+        if slot:
+            slot.is_booked = True
 
     appointment = Appointment(
         client_id=user_id,

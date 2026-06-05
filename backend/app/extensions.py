@@ -8,5 +8,8 @@ from flask_socketio import SocketIO
 
 db = SQLAlchemy()
 migrate = Migrate()
-jwt = JWTManager()
+if JWTManager is not None:
+    jwt = JWTManager()
+else:
+    jwt = None
 socketio = SocketIO()

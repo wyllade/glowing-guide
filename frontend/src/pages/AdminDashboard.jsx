@@ -14,12 +14,13 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (user && user.role !== "admin") {
+    if (!user) return;
+    if (user.role !== "admin") {
       navigate("/dashboard");
       return;
     }
     adminAPI.dashboard().then((res) => setStats(res.data)).finally(() => setLoading(false));
-  }, [user]);
+  }, [user, navigate]);
 
   const fetchUsers = () => adminAPI.listUsers().then((res) => setUsers(res.data.users));
   const fetchCounsellors = () => adminAPI.listCounsellors().then((res) => setCounsellors(res.data.counsellors));

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { appointmentAPI } from "../services/api";
 import { useAuth } from "../context/AuthContext";
@@ -8,16 +8,20 @@ export default function Appointments() {
   const navigate = useNavigate();
   const [appointments, setAppointments] = useState([]);
   const [filter, setFilter] = useState("");
+  const [loading, setLoading] = useState(true);
 
-  const fetchAppointments = () => {
-    appointmentAPI.list({ status: filter || undefined }).then((res) =>
-      setAppointments(res.data.appointments)
-    );
-  };
+  const fetchAppointments = useCallback(() => {
+    return appointmentAPI.list({ status: filter || undefined })
+      .then((res) => setAppointments(res.data.appointments))
+      .finally(() => setLoading(false));
+  }, [filter]);
 
-  useEffect(() => { fetchAppointments(); }, [filter]);
+  useEffect(() => {
+    fetchAppointments();
+  }, [fetchAppointments]);
 
   const handleStatus = async (id, status, reason = "") => {
+    setLoading(true);
     await appointmentAPI.updateStatus(id, { status, reason });
     fetchAppointments();
   };
@@ -36,7 +40,8 @@ export default function Appointments() {
       </div>
 
       <div className="appointment-list">
-        {appointments.map((a) => (
+        {loading && <div className="loading"><div className="spinner" /> Loading appointments...</div>}
+        {!loading && appointments.map((a) => (
           <div key={a.id} className="appointment-card">
             <div className="appt-info">
               <p className="appt-date">{new Date(a.start_time).toLocaleDateString()} at {new Date(a.start_time).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</p>
@@ -70,7 +75,7 @@ export default function Appointments() {
             </div>
           </div>
         ))}
-        {appointments.length === 0 && <p className="no-results">No appointments found.</p>}
+        {!loading && appointments.length === 0 && <p className="no-results">No appointments found.</p>}
       </div>
     </div>
   );

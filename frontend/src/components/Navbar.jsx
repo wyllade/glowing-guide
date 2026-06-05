@@ -13,7 +13,10 @@ export default function Navbar() {
   return (
     <nav className="navbar">
       <div className="nav-inner">
-        <Link to="/" className="nav-brand">Upward</Link>
+        <Link to="/" className="nav-brand">
+          <span className="nav-logo-mark">U</span>
+          <span className="nav-logo-text">pward</span>
+        </Link>
         <div className="nav-links">
           <Link to="/counsellors">Counsellors</Link>
           {user ? (

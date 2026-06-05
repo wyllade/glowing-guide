@@ -14,6 +14,11 @@ from datetime import datetime, time, timedelta
 app = create_app()
 
 with app.app_context():
+    if "--force" not in sys.argv:
+        print("⚠️  This will DROP all data and recreate the database.")
+        print("   Pass --force to proceed without confirmation.")
+        sys.exit(1)
+
     db.drop_all()
     db.create_all()
 

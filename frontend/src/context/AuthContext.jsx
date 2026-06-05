@@ -1,9 +1,9 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useState, useEffect } from "react";
 import { authAPI } from "../services/api";
 
 const AuthContext = createContext(null);
 
-export function AuthProvider({ children }) {
+function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -16,7 +16,9 @@ export function AuthProvider({ children }) {
         .catch(() => localStorage.removeItem("token"))
         .finally(() => setLoading(false));
     } else {
-      setLoading(false);
+      // Avoid calling setState synchronously inside an effect to prevent
+      // cascading renders; schedule state update on next tick.
+      setTimeout(() => setLoading(false), 0);
     }
   }, []);
 
@@ -50,4 +52,4 @@ export function AuthProvider({ children }) {
   );
 }
 
-export const useAuth = () => useContext(AuthContext);
+export default AuthProvider;

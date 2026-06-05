@@ -25,13 +25,13 @@ export default function CounsellorDetail() {
 
   function nextDayOfWeek(dayOfWeek, timeStr) {
     const now = new Date();
-    const result = new Date(now);
-    result.setHours(parseInt(timeStr.split(":")[0]), parseInt(timeStr.split(":")[1]), 0, 0);
-    const diff = (dayOfWeek - result.getDay() + 7) % 7;
-    if (diff === 0 && result <= now) {
-      result.setDate(result.getDate() + 7);
-    } else {
-      result.setDate(result.getDate() + diff);
+    const [hours, minutes] = timeStr.split(":").map(Number);
+    const result = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate(), hours, minutes, 0, 0));
+    const diff = (dayOfWeek - result.getUTCDay() + 7) % 7;
+    if (diff === 0 && result <= new Date()) {
+      result.setUTCDate(result.getUTCDate() + 7);
+    } else if (diff > 0) {
+      result.setUTCDate(result.getUTCDate() + diff);
     }
     return result;
   }
@@ -53,6 +53,7 @@ export default function CounsellorDetail() {
         start_time: startDate.toISOString(),
         end_time: endDate.toISOString(),
         notes,
+        slot_id: selectedSlot.id,
       });
       navigate("/appointments");
     } catch (err) {
@@ -70,12 +71,6 @@ export default function CounsellorDetail() {
       </div>
     );
   }
-
-  const grouped = {};
-  availability.forEach((slot) => {
-    if (!grouped[slot.day_of_week]) grouped[slot.day_of_week] = [];
-    grouped[slot.day_of_week].push(slot);
-  });
 
   return (
     <div className="counsellor-detail">
